@@ -12,22 +12,26 @@ const Add =document.getElementById('Add');
 const form =document.getElementById('form');
 
 var sumProduct =0;
-// const axiosInstance = axios.create('')
+
+const axiosInstance = axios.create({
+    baseURL:'https://crudcrud.com/api/b963ec4091404d5a92db1bf2647366e5'})
 
 form.addEventListener('submit' , onSubmit);
 
-// window.addEventListener('DOMContentLoaded',()=>{
-//     axiosInstance.get('/addData')
-//     .then((res)=>{
+window.addEventListener('DOMContentLoaded',()=>{
+    axiosInstance.get('/addData')
+    .then((res)=>{
 
-//         for(let i =0;i<res.data.length;i++){
-//         showOnScreen(res.data[i]);
-//         // console.log(res.data[i]._id);
-//         }
+        for(let i =0;i<res.data.length;i++){
+        showOnScreen(res.data[i]);
+        sumProduct+= JSON.parse(res.data[i].price);
+        }
+
+        sum.innerHTML=sumProduct;
         
-//     })
-//     .catch(err=>console.log(err));
-// });
+    })
+    .catch(err=>console.log(err));
+});
 function onSubmit(e){
 
     e.preventDefault();
@@ -41,27 +45,33 @@ function onSubmit(e){
     let myobj ={
         pName:productName.value,
         price:sellPrice.value
+    
     }
     
-    // axiosInstance.post('/addData', myobj)
-    // .then((response) => {
-    //     showOnScreen(response.data);
-    //     // console.log(response.data)
-    // })
-    // .catch((err) => console.log(err));
-    // }
-    showOnScreen(myobj);
-    localStorage.setItem(myobj.pName,JSON.stringify(myobj));
+    axiosInstance.post('/addData',myobj)
+    .then((response) => {
+        showOnScreen(response.data);
+        // console.log(response.data)
+        sumProduct+=JSON.parse(myobj.price);
+
+        sum.innerHTML=sumProduct;
+   
+    })
+    .catch((err) => console.log(err));
+    
+    // showOnScreen(myobj);
+    // localStorage.setItem(myobj.pName,JSON.stringify(myobj));
 
     sellPrice.value='';
     productName.value ='';
 
-    sumProduct-=sellPrice.value;
-    
-    sum.innerHTML=sumProduct;
+   
+
+    console.log(sumProduct);
 }
 
 }
+
 function showOnScreen(myobj){
 
     const li =document.createElement('li');
@@ -77,7 +87,7 @@ function showOnScreen(myobj){
 
     
 
-    li.appendChild(document.createTextNode(`${productName.value} : ${sellPrice.value}`));
+    li.appendChild(document.createTextNode(`${myobj.pName} : ${myobj.price}`));
     
     li.appendChild(del);
 
@@ -86,8 +96,8 @@ function showOnScreen(myobj){
 
 
     del.onclick=()=>{
-    // axiosInstance.delete(`/addData/${myobj._id}`)
-    localStorage.removeItem(myobj.pName);
+    axiosInstance.delete(`/addData/${myobj._id}`)
+    // localStorage.removeItem(myobj.pName);
         userList.removeChild(li);
 
         sumProduct-=myobj.price;
