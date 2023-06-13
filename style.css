@@ -1,0 +1,67 @@
+
+*{
+    margin: 0;
+    padding: 0;
+}
+
+body{
+
+    background: linear-gradient(#4f4649,#000fff,#41354b);
+    background-repeat: no-repeat;
+    height: 100vw;
+}
+
+
+.Container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background:#5acab7c4;
+    width:50vw;
+    margin: 10% auto;
+    border-radius: 10px;
+    font-size: 20px;
+}
+
+#form{
+    
+    margin: 2rem;
+    width:50vw;
+    display: flex;
+    justify-content:center ;
+    align-items: center;
+    flex-direction: column;
+}
+
+.Add{
+
+    margin: 1rem;
+    padding: 5px;
+
+    border: 1px solid blue;
+    background-color: darkslateblue;
+    color: azure;
+    border-radius: 4px;
+
+}
+
+
+input:focus{
+
+    padding: 5px;
+    margin: 2px;
+    border: 1px solid cyan;
+}
+#userList{
+    display: inline;
+    align-items: center;
+
+}
+
+.error{
+
+    color:white;
+    background-color: rgba(217, 46, 191, 0.646);
+    padding: 2px;
+}

@@ -1,108 +1,127 @@
 
 const sellPrice = document.getElementById('SellPrice');
 
-const productName =document.getElementById('ProductName');
+const productName = document.getElementById('ProductName');
 
-const userList =document.getElementById('userList');
+const userList = document.getElementById('userList');
 
-const sum =document.getElementById('sum');
+const sum = document.getElementById('sum');
 
-const Add =document.getElementById('Add');
+const Add = document.getElementsByClassName('Add');
 
-const form =document.getElementById('form');
+const form = document.getElementById('form');
 
-var sumProduct =0;
+const msg = document.querySelector('#message');
+var sumProduct = 0;
 
 const axiosInstance = axios.create({
-    baseURL:'https://crudcrud.com/api/b963ec4091404d5a92db1bf2647366e5'})
+    baseURL: 'http://localhost:3000'
+})
 
-form.addEventListener('submit' , onSubmit);
+form.addEventListener('submit', onSubmit);
 
-window.addEventListener('DOMContentLoaded',()=>{
-    axiosInstance.get('/addData')
-    .then((res)=>{
+try {
+    window.addEventListener('DOMContentLoaded', async () => {
 
-        for(let i =0;i<res.data.length;i++){
-        showOnScreen(res.data[i]);
-        sumProduct+= JSON.parse(res.data[i].price);
+        const res = await axiosInstance.get('/getProducts');
+
+        for (let i = 0; i < res.data.length; i++) {
+            showOnScreen(res.data[i]);
+            sumProduct += JSON.parse(res.data[i].price);
         }
 
-        sum.innerHTML=sumProduct;
-        
-    })
-    .catch(err=>console.log(err));
-});
-function onSubmit(e){
+        sum.innerHTML = sumProduct;
 
-    e.preventDefault();
 
-    if(sellPrice.value==='' || productName.value ===''){
-
-    }
-
-    else{
-
-    let myobj ={
-        pName:productName.value,
-        price:sellPrice.value
-    
-    }
-    
-    axiosInstance.post('/addData',myobj)
-    .then((response) => {
-        showOnScreen(response.data);
-        // console.log(response.data)
-        sumProduct+=JSON.parse(myobj.price);
-
-        sum.innerHTML=sumProduct;
-   
-    })
-    .catch((err) => console.log(err));
-    
-    // showOnScreen(myobj);
-    // localStorage.setItem(myobj.pName,JSON.stringify(myobj));
-
-    sellPrice.value='';
-    productName.value ='';
-
-   
-
-    console.log(sumProduct);
+    });
+} catch (error) {
+    console.log(error);
 }
 
+async function onSubmit(e) {
+
+    try {
+        e.preventDefault();
+
+        if (sellPrice.value === '' || productName.value === '') {
+
+            msg.classList.add('error')
+            msg.innerHTML = 'Please fill the form ';
+
+            setTimeout(() => msg.remove(), 2000);
+
+        }
+
+        else {
+            let myobj = {
+                productName: productName.value,
+                price: sellPrice.value
+
+            }
+            const product = await axiosInstance.post('/AddProducts', myobj)
+
+            // This is for show in my screen
+          
+            showOnScreen(myobj);
+
+           
+            // total amount 
+            sumProduct += JSON.parse(myobj.price);
+            sum.innerHTML = sumProduct;
+
+            // empty my input field
+            sellPrice.value = '';
+            productName.value = '';
+
+        }
+    }
+    catch (error) {
+
+        console.log(error);
+    }
+
+
+
 }
 
-function showOnScreen(myobj){
 
-    const li =document.createElement('li');
+function showOnScreen(myobj) {
+    console.log(myobj);
+
+    const li = document.createElement('li');
 
     const del = document.createElement('button');
 
+    //  Delete button
+    del.innerHTML = 'Delete Products';
+    del.classList.add('Add');
+    // del.style.margin='0px 6px';
+    // del.style.padding='0px 6px';
 
- 
-//  Delete button
-    del.innerHTML ='Delete Products';
-    del.style.margin='0px 6px';
-    del.style.padding='0px 6px';
 
-    
 
-    li.appendChild(document.createTextNode(`${myobj.pName} : ${myobj.price}`));
-    
+    li.appendChild(document.createTextNode(`${myobj.productName} : ${myobj.price}`));
+
     li.appendChild(del);
 
-    userList.style.listStyle='none';
+    userList.style.listStyle = 'none';
     userList.appendChild(li);
 
 
-    del.onclick=()=>{
-    axiosInstance.delete(`/addData/${myobj._id}`)
-    // localStorage.removeItem(myobj.pName);
+
+    del.onclick = async () => {
+
+        
+        await axiosInstance.post(`/deleteProducts/${myobj.id}`)
+
+        // localStorage.removeItem(myobj.pName);
         userList.removeChild(li);
 
-        sumProduct-=myobj.price;
-        sum.innerHTML=sumProduct;
-        }
-    
+        sumProduct -= myobj.price;
+        sum.innerHTML = sumProduct;
     }
 
+
+
+
+}
